@@ -5,8 +5,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using API.Data;
+using API.DTOs;
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -14,26 +17,68 @@ namespace API.Controllers
     {
 
         private readonly DataContext _context;
-        public AccountController(DataContext context) 
+        private readonly ITokenService _tokenService;
+        public AccountController(DataContext context, ITokenService tokenService) 
         {
-            _context = context;
+            _context = context; // _context is our database. We will use await when making calls to our database.
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<AppUser>> Register(string username, string password) 
+        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto) 
         {
-            using var hmac = new HMACSHA512(); // adding the using keyword wil ensure the HMACSHA512 class uses the dispose method. 
+            if (await UserExists(registerDto.Username)) return BadRequest("Username is taken"); // Returns a 400 Error response that says "Username is taken"
+
+            using var hmac = new HMACSHA512(); // adding the using keyword will ensure the HMACSHA512 class uses the dispose method. 
 
             var user = new AppUser {
-                UserName = username,
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password)),
+                UserName = registerDto.Username,
+                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
                 PasswordSalt = hmac.Key
             };
 
             _context.Users.Add(user); // Tracks user in entity framework.
             await _context.SaveChangesAsync(); // Call database and save user into user table.
 
-            return user;
-        }        
+            return new UserDto 
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<UserDto>> LoginAsync(LoginDto loginDto) 
+        {
+            var user = await _context.Users.
+            SingleOrDefaultAsync(x => x.UserName == loginDto.UserName);
+
+            if (user == null) return Unauthorized("Invalid username"); // Returns a 401 error to the frontend
+
+            // Calculate the computed hash of the user's password using passwordSalt 
+            using var hmac = new HMACSHA512(user.PasswordSalt); // Passing in the secret key of the user's password encryption.  
+
+
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+
+            // If the password in computedHash is the same as the user password using the orginal salt, then the user has entered the correct password. 
+            // else, they've entered the wrong password and we'll return a 401 error. 
+            for (int i = 0; i < computedHash.Length; i ++) 
+            {
+                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password"); // Returns a 401 error to the frontend
+            }
+
+            return new UserDto 
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            }; 
+
+        }
+
+        private async Task<bool> UserExists(string username) 
+        {
+            return await _context.Users.AnyAsync(x => x.UserName == username.ToLower());
+        }
     }
 }
