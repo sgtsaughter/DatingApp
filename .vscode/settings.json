@@ -1,0 +1,14 @@
+{
+  "omnisharp.disableMSBuildDiagnosticWarning": true,
+  "omnisharp.waitForDebugger": true,
+  "problems.showCurrentInStatus": true,
+  "csharp.inlayHints.parameters.enabled": true,
+  "omnisharp.autoStart": true,
+  "omnisharp.useGlobalMono": "always",
+  "omnisharp.projectLoadTimeout": 12000,
+  "files.exclude": {
+    "**/bin": true,
+    "**/obj": true
+  },
+  "explorer.compactFolders": false
+}
