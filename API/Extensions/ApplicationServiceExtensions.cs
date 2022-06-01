@@ -20,6 +20,7 @@ namespace API.Extensions
             // 2 AddScoped, scoped to the lifetime of the http request // Most appropriate for http requests. 
             // 3 AddTransient, the service is created and destroyed as soon as the method is destroyed. 
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddDbContext<DataContext>(options => {
                 options.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
