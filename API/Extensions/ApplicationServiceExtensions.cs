@@ -21,7 +21,9 @@ namespace API.Extensions
             // 1 AddSingleton, stays around until the application has ended.
             // 2 AddScoped, scoped to the lifetime of the http request // Most appropriate for http requests. 
             // 3 AddTransient, the service is created and destroyed as soon as the method is destroyed. 
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddDbContext<DataContext>(options => {
