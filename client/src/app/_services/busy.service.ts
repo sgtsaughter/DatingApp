@@ -10,7 +10,7 @@ export class BusyService {
   constructor(private spinnerService: NgxSpinnerService) { }
 
   busy() {
-    this.busyRequestCount ++;
+    this.busyRequestCount++;
     this.spinnerService.show(undefined, {
       type: 'line-scale-party',
       bdColor: 'rgba(255,255,255,0)',
@@ -20,7 +20,7 @@ export class BusyService {
 
   idle() {
     this.busyRequestCount--;
-    if(this.busyRequestCount <= 0) {
+    if (this.busyRequestCount <= 0) {
       this.busyRequestCount = 0;
       this.spinnerService.hide();
     }

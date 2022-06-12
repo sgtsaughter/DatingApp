@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
-import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
 import { Member } from '../_models/member';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -15,9 +15,7 @@ export class MembersService {
   constructor(private http: HttpClient) { }
 
   getMembers() {
-    if (this.members.length > 0) {
-      return of(this.members);
-    }
+    if (this.members.length > 0) return of(this.members);
     return this.http.get<Member[]>(this.baseUrl + 'users').pipe(
       map(members => {
         this.members = members;
@@ -28,10 +26,8 @@ export class MembersService {
 
   getMember(username: string) {
     const member = this.members.find(x => x.username === username);
-    if (member !== undefined) {
-      return of(member)
-    }
-    return this.http.get<Member>(this.baseUrl + 'users/' + username)
+    if (member !== undefined) return of(member);
+    return this.http.get<Member>(this.baseUrl + 'users/' + username);
   }
 
   updateMember(member: Member) {

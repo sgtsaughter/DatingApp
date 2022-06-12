@@ -1,10 +1,10 @@
-import { ToastrService } from 'ngx-toastr';
-import { MembersService } from './../../_services/members.service';
-import { AccountService } from './../../_services/account.service';
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { Member } from 'src/app/_models/member';
 import { User } from 'src/app/_models/user';
+import { AccountService } from 'src/app/_services/account.service';
+import { MembersService } from 'src/app/_services/members.service';
 import { take } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 import { NgForm } from '@angular/forms';
 
 @Component({
@@ -22,12 +22,10 @@ export class MemberEditComponent implements OnInit {
     }
   }
 
-  constructor(
-    private accountService: AccountService,
-    private memberService: MembersService,
-    private toastr: ToastrService) {
-    this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
-   }
+  constructor(private accountService: AccountService, private memberService: MembersService, 
+    private toastr: ToastrService) { 
+      this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
+  }
 
   ngOnInit(): void {
     this.loadMember();
@@ -45,5 +43,4 @@ export class MemberEditComponent implements OnInit {
       this.editForm.reset(this.member);
     })
   }
-
 }
