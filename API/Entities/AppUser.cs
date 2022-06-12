@@ -26,10 +26,12 @@ namespace API.Entities
         public ICollection<Photo> Photos { get; set; }
 
         // Automapper automatically detects the Get in this function name, and calls this function whenever it has to get the Age of a Member
-        // public int GetAge()
-        //{
-          //  return DateOfBirth.CalculateAge();
-       // }
+        public int GetAge()
+        {
+            var age = DateOfBirth.CalculateAge();
+
+            return age;
+        }
 
         
     }
