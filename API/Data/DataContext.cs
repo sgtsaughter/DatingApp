@@ -10,5 +10,26 @@ namespace API.Data
     }
 
     public DbSet<AppUser> Users { get; set; }
+    public DbSet<UserLike> Likes { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<UserLike>()
+                .HasKey(k => new { k.SourceUserId, k.LikedUserId }); // configuring primary key for the UserLike table (I thinik it'll be the UserLike table)
+
+            builder.Entity<UserLike>()
+                .HasOne(s => s.SourceUser)
+                .WithMany(l => l.LikedUsers) // This says a sourceUser can like many other users
+                .HasForeignKey(s => s.SourceUserId)
+                .OnDelete(DeleteBehavior.Cascade); // If we delete a user we delete the related entities. 
+
+            builder.Entity<UserLike>()
+                .HasOne(s => s.LikedUser)
+                .WithMany(l => l.LikedByUsers) 
+                .HasForeignKey(s => s.LikedUserId)
+                .OnDelete(DeleteBehavior.Cascade); 
+        }
   }
 }

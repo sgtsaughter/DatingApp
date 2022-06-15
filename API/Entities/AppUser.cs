@@ -24,15 +24,8 @@ namespace API.Entities
         public string City { get; set; }
         public string Country { get; set; }
         public ICollection<Photo> Photos { get; set; }
-
-        // Automapper automatically detects the Get in this function name, and calls this function whenever it has to get the Age of a Member
-        public int GetAge()
-        {
-            var age = DateOfBirth.CalculateAge();
-
-            return age;
-        }
-
+        public ICollection<UserLike> LikedByUsers { get; set; } // list of users who liked the currently logged in user
+        public ICollection<UserLike> LikedUsers   { get; set; } // list of users the currently logged in user has liked 
         
     }
 }
