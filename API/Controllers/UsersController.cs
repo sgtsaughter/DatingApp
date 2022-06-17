@@ -31,6 +31,8 @@ namespace API.Controllers
             _photoService = photoService;
         }
 
+
+
     // always use asynchronous code when hitting the database. 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
@@ -48,7 +50,7 @@ namespace API.Controllers
         return Ok(users);
     }
 
-    // api/users/3 -- get the user with the id of 3.
+        // api/users/3 -- get the user with the id of 3.
     [HttpGet("{username}", Name = "GetUser")]
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {

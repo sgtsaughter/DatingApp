@@ -8,6 +8,6 @@ namespace API.Interfaces
 {
     public interface ITokenService // Every interface in C# begins with an I 
     {
-        string CreateToken(AppUser user);
+        Task<string> CreateToken(AppUser user);
     }
 }
