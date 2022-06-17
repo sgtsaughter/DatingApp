@@ -6,6 +6,7 @@ using API.Data;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
+using API.SignalR;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,7 @@ namespace API.Extensions
             // 1 AddSingleton, stays around until the application has ended.
             // 2 AddScoped, scoped to the lifetime of the http request // Most appropriate for http requests. 
             // 3 AddTransient, the service is created and destroyed as soon as the method is destroyed. 
+            services.AddSingleton<PresenceTracker>();
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
