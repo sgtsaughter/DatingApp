@@ -37,6 +37,11 @@ export class AccountService {
   }
 
   setCurrentUser(user: User) {
+    user.roles = [];
+    const roles = this.getDecodedToken(user.token).role;
+    // if the user is assigned to multiple roles then const roles will be returned as an array,
+    // if not, then it will be returned as just a string.
+    Array.isArray(roles) ? user.roles = roles : user.roles.push(roles);
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource.next(user);
   }
@@ -44,5 +49,11 @@ export class AccountService {
   logout() {
     localStorage.removeItem('user');
     this.currentUserSource.next(null);
+  }
+
+  getDecodedToken(token) {
+    // the token is not encrypted. The signature is the only thing that is encrypted.
+    // the token comes in 3 parts. Header, Payload, Signature
+    return JSON.parse(atob(token.split('.')[1]));
   }
 }
