@@ -35,13 +35,7 @@ namespace API.Controllers
 
             var user = _mapper.Map<AppUser>(registerDto);
 
-            using var hmac = new HMACSHA512(); // adding the using keyword will ensure the HMACSHA512 class uses the dispose method. 
-
-
             user.UserName = registerDto.Username.ToLower();
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
-            user.PasswordSalt = hmac.Key;
-
 
             _context.Users.Add(user); // Tracks user in entity framework.
             await _context.SaveChangesAsync(); // Call database and save user into user table.
@@ -63,19 +57,6 @@ namespace API.Controllers
             .SingleOrDefaultAsync(x => x.UserName == loginDto.UserName);
 
             if (user == null) return Unauthorized("Invalid username"); // Returns a 401 error to the frontend
-
-            // Calculate the computed hash of the user's password using passwordSalt 
-            using var hmac = new HMACSHA512(user.PasswordSalt); // Passing in the secret key of the user's password encryption.  
-
-
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
-
-            // If the password in computedHash is the same as the user password using the orginal salt, then the user has entered the correct password. 
-            // else, they've entered the wrong password and we'll return a 401 error. 
-            for (int i = 0; i < computedHash.Length; i ++) 
-            {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password"); // Returns a 401 error to the frontend
-            }
 
             return new UserDto
             {
