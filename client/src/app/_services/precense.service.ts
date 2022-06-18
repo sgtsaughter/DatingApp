@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { take } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
@@ -30,12 +30,17 @@ export class PresenceService {
         .start()
         .catch(error => console.log(error));
 
+      // TODO: when user logs in it doesn't update you need to refresh to see that they're online. 
       this.hubConnection.on('UserIsOnline', username => {
-        this.toastr.info(username + ' has connected');
+        this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
+          this.onlineUserSource.next([...usernames, username])
+        })
       })
 
       this.hubConnection.on('UserIsOffline', username => {
-        this.toastr.warning(username + 'has disconnected');
+        this.onlineUsers$.pipe(take(1)).subscribe(usernames => {
+          this.onlineUserSource.next([...usernames.filter(x => x !== username)])
+        })
       })
 
       this.hubConnection.on("GetOnlineUsers", (usernames: string[]) => {
