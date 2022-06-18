@@ -18,10 +18,10 @@ namespace API.SignalR
         [Authorize]
         public override async Task OnConnectedAsync()
         {
-            // when a client connects, we're going to update our precense tracker,
+            // when a client connects, we're going to update our prepense tracker,
             // and we're going to send the updated list of current users back to everyone that's connected.
             var isOnline = await _tracker.UserConnected(Context.User.GetUsername(), Context.ConnectionId);
-            if (!isOnline)
+            if (isOnline)
                 await Clients.Others.SendAsync("UserIsOnline", Context.User.GetUsername());
             
 
